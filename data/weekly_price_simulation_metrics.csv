@@ -1,0 +1,7 @@
+scenario,model,test_weeks,mae_eur_per_kg,direction_accuracy
+No planted price signal,persistence,103,0.2523964247135319,
+No planted price signal,market_only,103,0.2081058485238484,0.7087378640776699
+No planted price signal,market_satellite,103,0.2080375166402994,0.7184466019417476
+Planted price signal,persistence,103,0.34606834650018187,
+Planted price signal,market_only,103,0.3331755616924647,0.6990291262135923
+Planted price signal,market_satellite,103,0.2645451066480966,0.7961165048543689

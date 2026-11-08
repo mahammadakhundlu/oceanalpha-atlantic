@@ -52,13 +52,12 @@ def simulate(inputs, strength):
     return frame
 
 
-def score(frame):
+def score(frame, target="simulated_sales_eur"):
     eligible = frame.dropna(subset=MARKET + ["log_chl"])
     train = eligible.loc[eligible.index < SPLIT]
     test = eligible.loc[eligible.index >= SPLIT].copy()
     if train.empty or test.empty:
         raise ValueError("Insufficient weekly coverage for the chronological split")
-    target = "simulated_sales_eur"
     test["persistence"] = test.last_sales
     for model, columns in [
         ("market_only", MARKET), ("market_satellite", MARKET + ["log_chl"]),

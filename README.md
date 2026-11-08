@@ -21,6 +21,19 @@ The input is a real NASA Aqua MODIS eight-day satellite chlorophyll composite, s
 
 Both simulations use the same seasonal patterns and random draws for quantity and price. In one scenario, simulated sales are independent of the satellite measurements given the seasonal inputs. In the other, higher chlorophyll deliberately raises simulated quantity. The planted effect is a test of the pipeline. It does not establish a relationship at Peniche. The models train on weeks before 2 January 2023 and score the same later weeks within each scenario. Previous-week receipts are assumed available at the Monday cutoff.
 
+### Weekly fish-price simulation
+
+Run `python price_simulation.py`. This separate experiment forecasts simulated sardine price in €/kg directly from earlier simulated prices and seasonality, then adds chlorophyll from the real satellite grid. The model uses a regional median extracted from each grid, rather than training on image pixels. An inverse chlorophyll effect is deliberately planted in one scenario. The other scenario has the same random draws and no planted price effect. Both models score the same 103 held-out weeks per scenario.
+
+| Scenario | Price model | Up/down correct | Average miss |
+|---|---|---:|---:|
+| No planted effect | Price history + season | 71% | €0.21/kg |
+| No planted effect | Also uses satellite chlorophyll | 72% | €0.21/kg |
+| Planted effect | Price history + season | 70% | €0.33/kg |
+| Planted effect | Also uses satellite chlorophyll | 80% | €0.26/kg |
+
+Direction is relative to the previous week's simulated price. The unchanged-price benchmark never predicts a direction. Average miss is the average absolute distance from the simulated price, regardless of whether the forecast is high or low. Results show how well the model recovers the planted rule, with actual weekly market prices still needed to establish real forecasting skill.
+
 ### Observed annual gross landed value
 
 | Forecast | Mean absolute error |
