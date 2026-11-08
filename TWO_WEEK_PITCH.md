@@ -20,3 +20,17 @@ If you have an export, filter to Peniche fishing vessels using the verified anch
 The script compares the last available count, a season-and-visit-history model, and the same model with satellite chlorophyll added. It uses a common held-out period and leaves one week for visit reporting. The reporting delay is an assumption.
 
 Source: https://globalfishingwatch.org/datasets-and-code-anchorages/
+
+## Repeated two-week buyer tests
+
+Run `buyer_stress_test.py` with Python to reproduce 480 scenario/seed/quote combinations (4 price scenarios × 40 seeds × 3 quote premiums). The chart shows median simulated savings against always waiting. The table reports the median paired improvement and how often adding satellite data beats the market-only buyer.
+
+![Simulated buyer savings by scenario](results/buyer_savings.svg)
+
+[Summary CSV](results/buyer_summary.csv) · [Every run](results/buyer_runs.csv)
+
+At the 5% supplier premium, the satellite buyer beat the market-only buyer in 8/40 runs with no planted effect, 34/40 with a weak effect, 40/40 with the planted effect, and 37/40 with the planted effect plus more price noise. The median paired gain was approximately €0.00, €0.77, €3.72 and €4.21 per 100 kg respectively. These are simulated purchasing savings under assumed supplier quotes, no fees and guaranteed fill. They are not observed profit.
+
+The exact satellite grids are checked in. [Eight-day Aqua MODIS chlorophyll](data/modis_8day.csv) is the weekly model input. [Monthly Aqua MODIS chlorophyll](data/modis_chlorophyll.csv) and [monthly NASA/JPL MUR surface temperature](data/mur_temperature.csv) belong to the earlier annual experiment.
+
+A verified AIS export can be supplied with `python buyer_stress_test.py --visits peniche_visits_weekly.csv --out results_with_ais`. It must cover every simulation week. The simulation uses the observed counts as an activity proxy and applies an assumed relationship between activity and price. The committed runs contain no AIS data because the historical port-visits endpoint required credentials. Detected visits would ground the activity proxy, but cannot establish fish imports, quantities, species, or prices.
