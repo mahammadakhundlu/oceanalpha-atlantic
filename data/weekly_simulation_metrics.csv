@@ -1,0 +1,7 @@
+scenario,model,train_weeks,test_weeks,mae_eur
+No planted signal,persistence,280,103,13088.572122477179
+No planted signal,market_only,280,103,10761.838761650113
+No planted signal,market_satellite,280,103,10773.471581307995
+Planted signal,persistence,280,103,10342.046962877752
+Planted signal,market_only,280,103,10002.060071266613
+Planted signal,market_satellite,280,103,8430.490457861915

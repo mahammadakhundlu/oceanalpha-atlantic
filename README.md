@@ -2,6 +2,38 @@
 
 Can satellite-derived ocean signals help predict Portuguese sardine landings and first-sale prices?
 
+The port-income target is **gross sardine auction receipts** (kilograms sold × euros per kilogram). The prototype tracks sale value before costs. It measures neither port operator fees nor profit.
+
+## Run the replay
+
+```bash
+python -m pip install -r requirements.txt
+python -m streamlit run app.py
+```
+
+The weekly tab shows a dated satellite chlorophyll grid off Peniche and forecasts the following seven days of **simulated** sardine receipts. Choose a Monday and reveal the simulated quantity, price and receipts. The annual tab reports the separate backtest on real Portuguese national data.
+
+To rebuild the demo, run `python backtest.py` and `python weekly.py` in that order. Both read the bundled snapshots.
+
+### Weekly simulation
+
+The input is a real NASA Aqua MODIS eight-day satellite chlorophyll composite, sampled off Peniche from 2017 through 2024. The timestamp marks the composite centre. The backtest assumes four days to finish the observation window and another fourteen for delivery. Each Monday uses the most recent eligible composite, requiring five valid pixels and skipping model scores when no qualifying composite was available within the prior 32 days. Actual delivery dates have not been verified. [Dataset](https://coastwatch.pfeg.noaa.gov/erddap/griddap/erdMH1chla8day_R202SQ.html) · [Exact subset](https://coastwatch.pfeg.noaa.gov/erddap/griddap/erdMH1chla8day_R202SQ.csv?chlor_a%5B(2017-01-05):1:(2025-01-05)%5D%5B(39.75):6:(39.0)%5D%5B(-10.5):6:(-9.5)%5D)
+
+Both simulations use the same seasonal patterns and random draws for quantity and price. In one scenario, simulated sales are independent of the satellite measurements given the seasonal inputs. In the other, higher chlorophyll deliberately raises simulated quantity. The planted effect is a test of the pipeline. It does not establish a relationship at Peniche. The models train on weeks before 2 January 2023 and score the same later weeks within each scenario. Previous-week receipts are assumed available at the Monday cutoff.
+
+### Observed annual gross landed value
+
+| Forecast | Mean absolute error |
+|---|---:|
+| Last eligible annual value | €5.46 million |
+| Market-only Ridge | €8.35 million |
+| Market + chlorophyll | €8.05 million |
+| Market + chlorophyll + surface temperature | €6.07 million |
+
+The two satellite inputs together improved on market-only Ridge, but the last reported annual value still had the lowest error. This comparison uses the same seven national test years as the landings and unit value experiments below.
+
+## Original research target
+
 Start with one Portuguese Atlantic port and weekly sardine landings. Evaluate first-sale price separately. Compare seasonality and past landings or prices against the same model with lagged satellite chlorophyll-a and sea-surface temperature. Then test what modeled currents and subsurface conditions add. Use chronological backtests and a replay that shows a dated ocean map, a forecast, and the recorded market outcome.
 
 ## Data and validation

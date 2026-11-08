@@ -32,7 +32,11 @@ def load_market():
         return pd.Series({int(year): source["value"].get(str(offset + position))
                           for year, position in year_index.items()}, dtype=float)
 
-    return pd.DataFrame({"tonnes": series("TPW"), "eur_per_kg": series("EUR_T") / 1000})
+    return pd.DataFrame({
+        "tonnes": series("TPW"),
+        "eur_per_kg": series("EUR_T") / 1000,
+        "gross_value_eur": series("EUR"),
+    })
 
 
 def load_ocean(filename, variable):
@@ -66,7 +70,7 @@ def main():
     panel = make_panel(load_market(), ocean)
     predictions = []
     results = {}
-    for target in ["tonnes", "eur_per_kg"]:
+    for target in ["tonnes", "eur_per_kg", "gross_value_eur"]:
         baseline = [f"{target}_lag"]
         chlorophyll = baseline + ["log_chlorophyll_lag"]
         enhanced = chlorophyll + ["sst_lag"]
