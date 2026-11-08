@@ -16,18 +16,25 @@ def main():
         frame["eur_per_kg"] *= np.exp(strength * signal)
         frame["simulated_sales_eur"] = frame.kg * frame.eur_per_kg
         frame["last_sales"] = frame.eur_per_kg.shift(1)
-        test, _ = score(frame, target="eur_per_kg")
-        actual_direction = np.sign(test.eur_per_kg - test.last_sales)
-        for model in MODELS:
-            predicted_direction = np.sign(test[model] - test.last_sales)
-            results.append({
-                "scenario": scenario, "model": model, "test_weeks": len(test),
-                "mae_eur_per_kg": (test[model] - test.eur_per_kg).abs().mean(),
-                "direction_accuracy": (
-                    None if model == "persistence"
-                    else (predicted_direction == actual_direction).mean()
-                ),
-            })
+        for horizon in range(1, 5):
+            test, _ = score(frame, target="eur_per_kg", horizon=horizon)
+            actual_direction = np.sign(test.outcome - test.last_sales)
+            supplier_quote = test.last_sales * 1.05
+            for model in MODELS:
+                predicted_direction = np.sign(test[model] - test.last_sales)
+                lock = test[model] > supplier_quote
+                cost = test.outcome.where(~lock, supplier_quote)
+                results.append({
+                    "scenario": scenario, "horizon_weeks": horizon,
+                    "model": model, "test_weeks": len(test),
+                    "mae_eur_per_kg": (test[model] - test.outcome).abs().mean(),
+                    "direction_accuracy": (
+                        None if model == "persistence"
+                        else (predicted_direction == actual_direction).mean()
+                    ),
+                    "lock_count": int(lock.sum()),
+                    "savings_vs_wait_eur_per_100kg": 100 * (test.outcome - cost).mean(),
+                })
     results = pd.DataFrame(results)
     results.to_csv(DATA / "weekly_price_simulation_metrics.csv", index=False)
     print(results.to_string(index=False))

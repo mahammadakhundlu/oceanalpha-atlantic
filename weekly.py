@@ -52,9 +52,12 @@ def simulate(inputs, strength):
     return frame
 
 
-def score(frame, target="simulated_sales_eur"):
-    eligible = frame.dropna(subset=MARKET + ["log_chl"])
-    train = eligible.loc[eligible.index < SPLIT]
+def score(frame, target="simulated_sales_eur", horizon=1):
+    frame = frame.copy()
+    frame["outcome"] = frame[target].shift(1 - horizon)
+    eligible = frame.dropna(subset=MARKET + ["log_chl", "outcome"])
+    # A target week must finish by the first held-out issue date.
+    train = eligible.loc[eligible.index + pd.Timedelta(weeks=horizon) <= SPLIT]
     test = eligible.loc[eligible.index >= SPLIT].copy()
     if train.empty or test.empty:
         raise ValueError("Insufficient weekly coverage for the chronological split")
@@ -63,7 +66,7 @@ def score(frame, target="simulated_sales_eur"):
         ("market_only", MARKET), ("market_satellite", MARKET + ["log_chl"]),
     ]:
         fit = make_pipeline(StandardScaler(), Ridge(alpha=10))
-        fit.fit(train[columns], np.log(train[target]))
+        fit.fit(train[columns], np.log(train.outcome))
         test[model] = np.exp(fit.predict(test[columns]))
     return test, len(train)
 

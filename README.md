@@ -98,3 +98,11 @@ For target year Y, the cutoff is 1 January Y and predictors use Y−2, leaving a
 - [DGRM monthly statistics](https://www.dgrm.pt/en/estatisticasmensais)
 - [Copernicus Atlantic Ocean Colour](https://data.marine.copernicus.eu/product/OCEANCOLOUR_ATL_BGC_L4_MY_009_118)
 - [Copernicus Iberian ocean physics](https://data.marine.copernicus.eu/product/IBI_MULTIYEAR_PHY_005_002/description)
+
+#### HackTheBurgh decision test
+
+Each Monday, forecast the average simulated auction price in delivery weeks 1 through 4. A buyer needs 100 kg and can lock an illustrative supplier quote at 5% above the latest known simulated auction price. Lock if the forecast exceeds the quote, otherwise wait and pay the simulated auction price. Score each horizon separately, with no fees and guaranteed fill. Savings are relative to always waiting. Training excludes outcomes ending after the first test cutoff.
+
+With a planted price signal, the satellite model called direction correctly 80%, 80%, 71% and 73% across weeks 1–4, versus 70%, 67%, 65% and 70% for the market-only model. It improved simulated buyer savings at weeks 1–3 and reduced them at week 4. With no planted signal, it improved buyer savings at none of the four horizons. See the full CSV for both scenarios and all benchmarks. These are simulated purchasing outcomes.
+
+For the visualization challenge, show the dated chlorophyll map off Peniche, then the price forecast with and without the satellite feature. For the decision challenge, reveal the simulated auction price and compare the cost of locking versus waiting. Label satellite observations and simulated prices separately.
